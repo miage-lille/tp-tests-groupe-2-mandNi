@@ -27,16 +27,11 @@ describe("Feature: Change seats", () => {
     useCase = new ChangeSeats(webinarRepository);
   });
 
-  //
-  // ────────────────────────────────────────────────────────────────────────────────
-  //   Section: Helper Methods
-  // ────────────────────────────────────────────────────────────────────────────────
-  //
 
   /**
    * A convenient alias to trigger the use-case from inside each test.
    */
-  async function whenUserAttemptsToChangeSeats(payload: {
+  async function whenUserChangesSeatsWith(payload: {
     user: any;
     webinarId: string;
     seats: number;
@@ -47,7 +42,7 @@ describe("Feature: Change seats", () => {
   /**
    * Assert that the seats for the default webinar remain unchanged
    */
-  function thenWebinarShouldRemainUnchanged() {
+  function expectWebinarToRemainUnchanged() {
     const existing = webinarRepository.findByIdSync(WEBINAR_ID);
     expect(existing?.props.seats).toEqual(INITIAL_SEATS);
   }
@@ -60,11 +55,6 @@ describe("Feature: Change seats", () => {
     expect(existing?.props.seats).toEqual(expectedSeats);
   }
 
-  //
-  // ────────────────────────────────────────────────────────────────────────────────
-  //   Scenario Tests
-  // ────────────────────────────────────────────────────────────────────────────────
-  //
 
   describe("Scenario: Happy path", () => {
     const payload = {
@@ -75,7 +65,7 @@ describe("Feature: Change seats", () => {
 
     it("should change the number of seats for a webinar", async () => {
       // ACT
-      await whenUserAttemptsToChangeSeats(payload);
+      await whenUserChangesSeatsWith(payload);
 
       // ASSERT
       await thenWebinarSeatsShouldBe(200);
@@ -90,11 +80,11 @@ describe("Feature: Change seats", () => {
     };
 
     it("should fail because the webinar does not exist", async () => {
-      await expect(whenUserAttemptsToChangeSeats(payload))
+      await expect(whenUserChangesSeatsWith(payload))
           .rejects
           .toThrowError("Webinar not found");
 
-      thenWebinarShouldRemainUnchanged(); // confirm the original webinar is still at 100 seats
+      expectWebinarToRemainUnchanged(); // confirm the original webinar is still at 100 seats
     });
   });
 
@@ -106,11 +96,11 @@ describe("Feature: Change seats", () => {
     };
 
     it("should fail because only the organizer can update seats", async () => {
-      await expect(whenUserAttemptsToChangeSeats(payload))
+      await expect(whenUserChangesSeatsWith(payload))
           .rejects
           .toThrowError("User is not allowed to update this webinar");
 
-      thenWebinarShouldRemainUnchanged();
+      expectWebinarToRemainUnchanged();
     });
   });
 
@@ -122,11 +112,11 @@ describe("Feature: Change seats", () => {
     };
 
     it("should fail because you cannot reduce the number of seats", async () => {
-      await expect(whenUserAttemptsToChangeSeats(payload))
+      await expect(whenUserChangesSeatsWith(payload))
           .rejects
           .toThrowError("You cannot reduce the number of seats");
 
-      thenWebinarShouldRemainUnchanged();
+      expectWebinarToRemainUnchanged();
     });
   });
 
@@ -138,11 +128,11 @@ describe("Feature: Change seats", () => {
     };
 
     it("should fail because seats exceed 1000", async () => {
-      await expect(whenUserAttemptsToChangeSeats(payload))
+      await expect(whenUserChangesSeatsWith(payload))
           .rejects
           .toThrowError("Webinar must have at most 1000 seats");
 
-      thenWebinarShouldRemainUnchanged();
+      expectWebinarToRemainUnchanged();
     });
   });
 });

@@ -8,7 +8,7 @@
     "prettier"
   ],
   "rules": {
-    "prettier/prettier": 2
+    "prettier/prettier": "off"
   },
   "env": {
     "browser": true,
