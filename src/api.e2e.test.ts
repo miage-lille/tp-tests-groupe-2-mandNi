@@ -96,6 +96,7 @@ describe('Webinar Routes E2E', () => {
         // ACT
         const response = await supertest(server)
             .post(`/webinars/test-webinar/seats`)
+            .set('Authorization', 'Bearer test-user-token')
             .send({ seats: 20, organizerId: 'organizer-2' }) // Wrong organizer
             .expect(403);
 

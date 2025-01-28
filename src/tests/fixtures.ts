@@ -54,9 +54,13 @@ export class TestServerFixture {
     }
 
     async stop() {
-        if (this.serverInstance) await this.serverInstance.close();
-        if (this.prismaClient) await this.prismaClient.$disconnect();
-        if (this.container) await this.container.stop();
+        try {
+            if (this.serverInstance) await this.serverInstance.close();
+            if (this.prismaClient) await this.prismaClient.$disconnect();
+            if (this.container) await this.container.stop();
+        } catch (error) {
+            console.error('Error stopping resources:', error);
+        }
     }
 
     async reset() {
